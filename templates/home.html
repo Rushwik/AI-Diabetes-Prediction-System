@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Diabetes Prediction</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+font-family: Arial;
+margin:0;
+background:#eef4fb;
+}
+
+/* NAVBAR */
+
+.navbar{
+padding:15px 60px;
+background:#eef4fb;
+border-bottom:1px solid #ddd;
+}
+
+.navbar a{
+text-decoration:none;
+margin-left:20px;
+color:#333;
+font-weight:500;
+transition:0.3s;
+}
+
+.navbar a:hover{
+color:#0077ff;
+}
+
+/* HERO */
+
+.hero{
+background:url("https://images.unsplash.com/photo-1579154204601-01588f351e67");
+background-size:cover;
+background-position:center;
+height:350px;
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+}
+
+/* GLASS EFFECT */
+
+.hero-content{
+position:relative;
+color:white;
+text-align:center;
+background:rgba(0,0,0,0.4);
+padding:30px 50px;
+border-radius:12px;
+backdrop-filter: blur(6px);
+}
+
+/* CONTENT */
+
+.section{
+padding:60px 120px;
+}
+
+.info-box{
+background:white;
+padding:35px;
+border-radius:12px;
+margin-bottom:30px;
+box-shadow:0px 6px 15px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.info-box:hover{
+transform:translateY(-8px);
+box-shadow:0px 12px 25px rgba(0,0,0,0.15);
+}
+
+.info-box h2{
+margin-bottom:15px;
+}
+
+/* FEATURE CARDS */
+
+.feature-row{
+display:flex;
+justify-content:center;
+gap:30px;
+margin-top:40px;
+}
+
+.feature-card{
+background:white;
+padding:25px;
+width:250px;
+text-align:center;
+border-radius:12px;
+box-shadow:0px 6px 15px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-6px);
+}
+
+/* BUTTON */
+
+.cta{
+text-align:center;
+margin-top:40px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<span style="font-size:20px;font-weight:600;">
+🩺 Diabetes AI System
+</span>
+
+<span style="float:right;">
+
+{% if session.get('user_id') %}
+
+<a href="/">Home</a> <a href="/predict">Prediction</a> <a href="/history">Past Data</a> <a href="/logout">Logout</a>
+
+<span style="margin-left:20px;">
+👤 Welcome {{ session['name'] }}
+</span>
+
+{% else %}
+
+<a href="/login">Login</a>
+
+{% endif %}
+
+</span>
+
+</div>
+
+<!-- HERO -->
+
+<div class="hero">
+<div class="hero-content">
+<h1>Intelligent Diabetes Prediction System</h1>
+<p>Early Risk Detection Using Machine Learning</p>
+</div>
+</div>
+
+<!-- CONTENT -->
+
+<div class="section">
+
+<div class="info-box">
+<h2>🧠 What is Diabetes?</h2>
+<p>
+Diabetes is a long-term metabolic disorder that affects how your body converts food into energy. Normally, your body breaks down food into glucose (sugar) and releases it into the bloodstream.
+</p>
+
+<p>
+In diabetes, either the body does not produce enough insulin or cannot use it effectively. This leads to high blood sugar levels which can damage organs.
+</p>
+
+<p>
+Type 2 diabetes is the most common and is strongly linked with lifestyle factors.
+</p>
+</div>
+
+<div class="info-box">
+<h2>⚙️ How Diabetes Occurs</h2>
+<ul>
+<li>Insulin deficiency</li>
+<li>Insulin resistance</li>
+<li>Hormonal imbalance</li>
+<li>Improper glucose metabolism</li>
+</ul>
+</div>
+
+<div class="info-box">
+<h2>⚠️ Symptoms</h2>
+<ul>
+<li>Frequent urination</li>
+<li>Excessive thirst</li>
+<li>Fatigue</li>
+<li>Blurred vision</li>
+<li>Slow healing wounds</li>
+</ul>
+</div>
+
+<div class="info-box">
+<h2>📌 Causes</h2>
+<ul>
+<li>Genetics</li>
+<li>Obesity</li>
+<li>Lack of exercise</li>
+<li>Stress</li>
+</ul>
+</div>
+
+<!-- FEATURE CARDS -->
+
+<div class="feature-row">
+
+<div class="feature-card">
+<h4>✔ Accurate Prediction</h4>
+<p>92% accuracy using Machine Learning</p>
+</div>
+
+<div class="feature-card">
+<h4>⚡ Fast Results</h4>
+<p>Instant diabetes risk prediction</p>
+</div>
+
+<div class="feature-card">
+<h4>📊 Data Tracking</h4>
+<p>View your prediction history anytime</p>
+</div>
+
+</div>
+
+<!-- BUTTON -->
+
+<div class="cta">
+
+{% if session.get('user_id') %} <a href="/predict" class="btn btn-dark btn-lg">
+Start Prediction → </a>
+{% else %} <a href="/login" class="btn btn-dark btn-lg">
+Login to Get Started → </a>
+{% endif %}
+
+</div>
+
+</div>
+
+</body>
+</html>

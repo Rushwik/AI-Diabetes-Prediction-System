@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Prediction Result</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#eef4fb;
+margin:0;
+}
+
+/* NAVBAR */
+
+.navbar{
+padding:15px 60px;
+background:#eef4fb;
+border-bottom:1px solid #ddd;
+}
+
+.navbar a{
+text-decoration:none;
+margin-left:20px;
+color:#333;
+font-weight:500;
+}
+
+.navbar a:hover{
+color:#0077ff;
+}
+
+/* RESULT BOX */
+
+.result-container{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:60px;
+}
+
+.result-box{
+background:white;
+padding:40px;
+border-radius:12px;
+width:900px;
+box-shadow:0px 8px 25px rgba(0,0,0,0.12);
+display:flex;
+gap:40px;
+align-items:center;
+}
+
+/* GLOW EFFECT */
+
+.high-glow{box-shadow:0 0 25px rgba(255,0,0,0.3);}
+.moderate-glow{box-shadow:0 0 25px rgba(255,165,0,0.3);}
+.low-glow{box-shadow:0 0 25px rgba(0,128,0,0.3);}
+
+/* LEFT SIDE */
+
+.result-text{
+flex:1;
+}
+
+.result-text h2{
+margin-bottom:20px;
+}
+
+.result-text p{
+font-size:16px;
+line-height:1.6;
+}
+
+/* BIG PROBABILITY */
+
+.prob{
+font-size:48px;
+font-weight:bold;
+margin:10px 0;
+}
+
+/* COLORS */
+
+.high{color:red;}
+.moderate{color:orange;}
+.low{color:green;}
+
+/* BUTTON */
+
+.check-btn{
+margin-top:15px;
+margin-right:10px;
+padding:10px 20px;
+border:none;
+background:#333;
+color:white;
+border-radius:6px;
+transition:0.3s;
+}
+
+.check-btn:hover{
+background:black;
+transform:scale(1.05);
+}
+
+/* SPEEDOMETER */
+
+.meter-box{
+flex:1;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<span style="font-size:20px;font-weight:600;">
+🩺 Diabetes AI System
+</span>
+
+<span style="float:right;">
+
+<a href="/">Home</a> <a href="/predict">Prediction</a> <a href="/history">Past Data</a> <a href="/logout">Logout</a>
+
+<span style="margin-left:20px;">
+👤 Welcome {{ session['name'] }}
+</span>
+
+</span>
+
+</div>
+
+<!-- RESULT -->
+
+<div class="result-container">
+
+<div class="result-box
+{% if prediction == 'High Risk' %}high-glow
+{% elif prediction == 'Moderate Risk' %}moderate-glow
+{% else %}low-glow{% endif %}">
+
+<!-- LEFT SIDE -->
+
+<div class="result-text">
+
+<h2>Diabetes Prediction Result</h2>
+
+<p>
+Dear User, based on your health data:
+</p>
+
+{% if prediction == "High Risk" %}
+
+<h4 class="high">⚠ High Risk of Diabetes</h4>
+{% elif prediction == "Moderate Risk" %}
+<h4 class="moderate">⚠ Moderate Risk of Diabetes</h4>
+{% else %}
+<h4 class="low">✔ Low Risk of Diabetes</h4>
+{% endif %}
+
+<div class="prob
+{% if prediction == 'High Risk' %}high
+{% elif prediction == 'Moderate Risk' %}moderate
+{% else %}low{% endif %}">
+{{ probability }}%
+</div>
+
+<h5>Health Recommendation</h5>
+
+<p>{{ recommendation }}</p>
+
+<!-- BUTTONS -->
+
+<a href="/predict">
+<button class="check-btn">Check Again</button>
+</a>
+
+<a href="/download">
+<button class="check-btn">Download Report (PDF)</button>
+</a>
+
+</div>
+
+<!-- RIGHT SIDE SPEEDOMETER -->
+
+<div class="meter-box">
+
+<canvas id="speedometer" width="350" height="250"></canvas>
+
+<div style="margin-top:10px;font-size:14px;">
+<span style="color:green;">Low</span> |
+<span style="color:orange;">Moderate</span> |
+<span style="color:red;">High</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* PROBABILITY VALUE */
+
+let probability = {{ probability }};
+
+/* METER COLORS */
+
+const data = {
+datasets:[{
+data:[40,30,30],
+backgroundColor:["#4CAF50","#FFC107","#F44336"],
+borderWidth:0,
+cutout:"80%",
+circumference:180,
+rotation:270
+}]
+};
+
+/* NEEDLE */
+
+const needlePlugin = {
+id:'needle',
+afterDraw(chart){
+
+const {ctx} = chart;
+const value = chart.config.data.datasets[0].needleValue;
+
+const angle = Math.PI + (value/100)*Math.PI;
+
+const cx = chart.getDatasetMeta(0).data[0].x;
+const cy = chart.getDatasetMeta(0).data[0].y;
+
+ctx.save();
+ctx.translate(cx,cy);
+ctx.rotate(angle);
+
+ctx.beginPath();
+ctx.moveTo(0,-3);
+ctx.lineTo(chart.getDatasetMeta(0).data[0].outerRadius,0);
+ctx.lineTo(0,3);
+ctx.fillStyle="#000";
+ctx.fill();
+
+ctx.restore();
+
+ctx.beginPath();
+ctx.arc(cx,cy,6,0,10);
+ctx.fill();
+}
+};
+
+const chart = new Chart(
+document.getElementById("speedometer"),
+{
+type:"doughnut",
+data:data,
+options:{
+plugins:{legend:{display:false}},
+animation:false
+},
+plugins:[needlePlugin]
+}
+);
+
+/* ANIMATION */
+
+let currentValue = 0;
+
+let interval = setInterval(()=>{
+if(currentValue >= probability){
+clearInterval(interval);
+}else{
+currentValue++;
+chart.config.data.datasets[0].needleValue = currentValue;
+chart.update();
+}
+},15);
+
+</script>
+
+</body>
+</html>
